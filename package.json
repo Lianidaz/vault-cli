@@ -1,0 +1,26 @@
+{
+  "name": "vault-cli",
+  "version": "0.0.1",
+  "description": "Extended tool for Vault",
+  "main": "cli.js",
+  "bin": {
+    "vault-cli": "./cli.js"
+  },
+  "scripts": {
+    "build": "npm i && pkg . --out-path binary/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lianidaz/vault-cli.git"
+  },
+  "author": "lianidaz@gmail.com",
+  "license": "Apache 2.0",
+  "dependencies": {
+    "commander": "2.20.0",
+    "logger": "0.0.1",
+    "node-fetch": "2.3.0"
+  },
+  "devDependencies": {
+    "pkg": "^4.4.0"
+  }
+}
