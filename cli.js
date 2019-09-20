@@ -52,6 +52,11 @@ cli
   .description("Copy contents of a secret/tree")
   .action(actions.copy)
 
+cli
+  .command("delete  <path>")
+  .description("Delete a secret ot tree")
+  .action(actions.del)
+
 cli.parse(process.argv)
 
 log.setLevel(cli.verbosity)

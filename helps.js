@@ -55,17 +55,24 @@ const list = async (path, opts) => {
 }
 
 const readTree = async (path, opts) => {
-  const rs = async (pth, acc, opts) => {
-    const tr = await list(pth, opts)
-    if (tr instanceof Error) return new Error(`No such path: ${pth}`)
-    for (k of tr) {
-      if (k.indexOf("/") == -1) {
-        acc.push(await read(pth + k, opts))
-      } else await rs(pth + k, acc, opts)
+  try {
+    const wait = []
+    const proms = []
+    const rs = async (pth, opts) => {
+      const l = await list(pth, opts)
+      for (let i = 0; i < l.length; i++) {
+        if (l[i].indexOf("/") >= 0) wait.push(rs(pth + l[i], opts))
+        else {
+          proms.push(read(pth + l[i], opts))
+        }
+      }
     }
-    return acc
+    await rs(path, opts)
+    await Promise.all(wait)
+    return { values: await Promise.all(proms), root: path }
+  } catch (e) {
+    throw new Error(e)
   }
-  return { root: path, values: await rs(path, [], opts) }
 }
 
 const writeTree = async (tree, dst, opts) => {
@@ -77,10 +84,31 @@ const writeTree = async (tree, dst, opts) => {
     .catch(e => log.error(e))
 }
 
+const del = async (path, opts) => {
+  const V = Vault(opts)
+
+  try {
+    log.debug(`Deleting ${path}`)
+    const res = await fetch(V.address + V.kvname + "/metadata/" + path, {
+      method: "DELETE",
+      headers: { "X-Vault-Token": V.token }
+    }).then(res => res.json())
+    log.debug(`Response :${JSON.stringify(res)}`)
+    return res.errors
+      ? { error: res.errors[0] }
+      : res.data
+      ? { data: res.data.data, path: path }
+      : { data: "", path: path }
+  } catch (e) {
+    return { error: e }
+  }
+}
+
 module.exports = {
   secret: {
     read: read,
-    write: write
+    write: write,
+    del: del
   },
   tree: {
     read: readTree,

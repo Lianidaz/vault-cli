@@ -83,9 +83,21 @@ const copy = async (src, dst, opts) => {
   }
 }
 
+const del = async (path, opts) => {
+  try {
+    let resp
+    if (path[path.length - 1] == "/") {
+    } else resp = secret.del(path, opts)
+    log.debug(resp)
+  } catch (e) {
+    log.fatal(e)
+  }
+}
+
 module.exports = {
   read,
   write,
   list,
-  copy
+  copy,
+  del
 }
