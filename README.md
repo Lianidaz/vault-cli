@@ -26,7 +26,7 @@ You must have Node.js 10+ installed.
 git clone https://github.com/Lianidaz/vault-cli.git
 cd vault-cli
 npm i -g pkg
-npm i
+npm run build
 ```
 
 Or run as JS file:
